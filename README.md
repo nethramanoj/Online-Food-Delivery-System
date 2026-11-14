@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# QuickBite — Online Food Delivery System
 
-## Getting Started
+A full-stack food delivery web application featuring a React + TypeScript frontend, a Node.js/Express REST API, and a **hybrid database architecture** combining **Neo4j (Graph NoSQL)** for personalized dish-level recommendations and **MySQL (Relational)** for transactional operations.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* **Frontend:** React, TypeScript, Tailwind CSS, Vite
+* **Backend:** Node.js, Express.js (`neo4j-driver`)
+* **NoSQL Database (Recommendations):** Neo4j Desktop / Neo4j Graph Database
+* **Relational Database (Core Transactions):** MySQL *(Schema & integration details to be added)*
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Features Implemented
 
-## Learn More
+### 1. Frontend Interface
+* User login & active session switching (`peg`, `sam`, `net`)
+* Interactive restaurant & dish menu across 3 restaurants (*Spice Garden*, *Pizza Corner*, *Wok Express*)
+* **Smart Recommendations** panel dynamically querying the Neo4j graph API for the active user
+* Cart, order placement, and transaction views
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Neo4j Graph Recommendation Engine (NoSQL)
+* **Graph Data Model:**
+  * `(:Restaurant)-[:OFFERS]->(:MenuItem)` — models 3 restaurants offering a 12-item catalog with pricing
+  * `(:User)-[:LIKES]->(:MenuItem)` — models curated cross-restaurant dish preferences per user
+* **REST Endpoint (`GET /api/recommendations?user=<username>`):**
+  * Matches personalized dish recommendations via `(u:User)-[:LIKES]->(f:MenuItem)<-[:OFFERS]-(r:Restaurant)`
+  * Includes a graceful fallback returning up to 3 general menu items (`LIMIT 3`) for new or guest users
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+Online-Food-Delivery-System/
+├── src/
+│   ├── components/quickbite/
+│   │   └── GraphRecommendations.tsx   # Fetches & renders user-specific Neo4j recs
+│   └── pages/                         # Login, Menu, Orders, and Transactions views
+├── server.js                          # Express backend & Neo4j Cypher query routes
+├── package.json
+└── README.md
